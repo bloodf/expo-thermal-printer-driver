@@ -36,7 +36,8 @@
     "clean": "del-cli lib",
     "prepare": "bob build",
     "typecheck": "tsc",
-    "lint": "eslint \"**/*.{js,ts,tsx}\""
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "test": "jest"
   },
   "keywords": [
     "react-native",
@@ -68,15 +69,19 @@
     "@eslint/js": "^9.35.0",
     "@react-native/babel-preset": "0.83.0",
     "@react-native/eslint-config": "0.83.0",
+    "@types/jest": "^30.0.0",
     "@types/react": "^19.1.12",
+    "babel-jest": "^30.3.0",
     "del-cli": "^6.0.0",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.3.0",
     "prettier": "^2.8.8",
     "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-builder-bob": "^0.40.18",
+    "ts-jest": "^29.4.6",
     "turbo": "^2.5.6",
     "typescript": "^5.9.2"
   },
