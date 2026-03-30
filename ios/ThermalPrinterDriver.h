@@ -1,5 +1,13 @@
+#pragma once
 #import <ThermalPrinterDriverSpec/ThermalPrinterDriverSpec.h>
+#import <React/RCTEventEmitter.h>
 
-@interface ThermalPrinterDriver : NSObject <NativeThermalPrinterDriverSpec>
+NS_ASSUME_NONNULL_BEGIN
+
+/// ObjC++ bridge: extends RCTEventEmitter and conforms to the codegen spec.
+/// All method bodies delegate to ThermalPrinterDriverImpl (Swift).
+@interface ThermalPrinterDriver : RCTEventEmitter <NativeThermalPrinterDriverSpec>
 
 @end
+
+NS_ASSUME_NONNULL_END
