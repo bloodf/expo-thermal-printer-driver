@@ -5,4 +5,5 @@ module.exports = {
     '^.+\\.[jt]sx?$': 'babel-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  testPathIgnorePatterns: ['/node_modules/', '/lib/'],
 };
