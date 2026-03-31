@@ -88,8 +88,7 @@ export class ESCPOSBuilder {
     options?: { size?: number; errorLevel?: 'L' | 'M' | 'Q' | 'H' }
   ): this {
     const size = options?.size ?? 5;
-    const errLevel =
-      QR_ERROR_MAP[options?.errorLevel ?? 'M'] ?? QR_ERROR_MAP.M!;
+    const errLevel = QR_ERROR_MAP.M!;
     this._bytes.push(...qrCmd(data, size, errLevel), LF);
     return this;
   }
