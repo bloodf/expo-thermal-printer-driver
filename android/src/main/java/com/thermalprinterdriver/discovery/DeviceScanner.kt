@@ -153,10 +153,11 @@ class DeviceScanner(private val reactContext: ReactApplicationContext) {
         } ?: return
 
         // Skip already-bonded (they're in pairedDevices)
-        if (device.bondState == BluetoothDevice.BOND_BONDED) return
+        val btDevice = device ?: return
+        if (btDevice.bondState == BluetoothDevice.BOND_BONDED) return
 
         val rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, 0).toInt()
-        val info = device.toDeviceInfo(rssi)
+        val info = btDevice.toDeviceInfo(rssi)
 
         if (foundDevices.none { it.address == info.address }) {
             foundDevices.add(info)

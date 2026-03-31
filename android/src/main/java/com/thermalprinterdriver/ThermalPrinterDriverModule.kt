@@ -73,7 +73,11 @@ class ThermalPrinterDriverModule(reactContext: ReactApplicationContext) :
                 if (transport == null) {
                     val result = Arguments.createMap()
                     result.putBoolean("success", false)
-                    result.putString("error", "Connection failed to $address")
+                    val errorMap = Arguments.createMap()
+                    errorMap.putString("code", "CONNECTION_FAILED")
+                    errorMap.putString("message", "Connection failed to $address")
+                    errorMap.putBoolean("retryable", true)
+                    result.putMap("error", errorMap)
                     promise.resolve(result)
                 } else {
                     emitOnConnectionChanged(address, "connected")
@@ -86,7 +90,11 @@ class ThermalPrinterDriverModule(reactContext: ReactApplicationContext) :
                 Log.e(TAG, "[Native:Android] connect ERROR: ${e.message}", e)
                 val result = Arguments.createMap()
                 result.putBoolean("success", false)
-                result.putString("error", e.message ?: "Connection failed")
+                val errorMap = Arguments.createMap()
+                errorMap.putString("code", "CONNECTION_FAILED")
+                errorMap.putString("message", e.message ?: "Connection failed")
+                errorMap.putBoolean("retryable", true)
+                result.putMap("error", errorMap)
                 promise.resolve(result)
             }
         }
@@ -231,13 +239,13 @@ class ThermalPrinterDriverModule(reactContext: ReactApplicationContext) :
     // ---- Event emitters ----
 
     private fun emitOnDeviceFound(deviceMap: com.facebook.react.bridge.WritableMap) {
-        reactApplicationContext
+        getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
             .emit(EVENT_DEVICE_FOUND, deviceMap)
     }
 
     private fun emitOnScanCompleted(resultMap: com.facebook.react.bridge.WritableMap) {
-        reactApplicationContext
+        getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
             .emit(EVENT_SCAN_COMPLETED, resultMap)
     }
@@ -246,16 +254,16 @@ class ThermalPrinterDriverModule(reactContext: ReactApplicationContext) :
         val params = Arguments.createMap()
         params.putString("address", address)
         params.putString("state", state)
-        reactApplicationContext
+        getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
             .emit(EVENT_CONNECTION_CHANGED, params)
     }
 
     // ---- Lifecycle ----
 
-    override fun onCatalystInstanceDestroy() {
-        super.onCatalystInstanceDestroy()
-        Log.d(TAG, "[Native:Android] onCatalystInstanceDestroy: cleanup")
+    override fun invalidate() {
+        super.invalidate()
+        Log.d(TAG, "[Native:Android] invalidate: cleanup")
         moduleScope.cancel()
         connectionPool.shutdown()
     }

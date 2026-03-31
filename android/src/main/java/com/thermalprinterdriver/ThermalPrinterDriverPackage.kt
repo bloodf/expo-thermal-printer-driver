@@ -20,7 +20,7 @@ class ThermalPrinterDriverPackage : BaseReactPackage() {
         mapOf(
             ThermalPrinterDriverModule.NAME to ReactModuleInfo(
                 name = ThermalPrinterDriverModule.NAME,
-                className = ThermalPrinterDriverModule.NAME,
+                className = ThermalPrinterDriverModule::class.java.name,
                 canOverrideExistingModule = false,
                 needsEagerInit = false,
                 isCxxModule = false,

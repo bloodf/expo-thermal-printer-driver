@@ -37,7 +37,7 @@ object ImageProcessor {
         }
 
         val scaled = scaleBitmap(bitmap, widthPx)
-        bitmap.recycle()
+        if (scaled !== bitmap) bitmap.recycle()
 
         val result = toEscPosRaster(scaled, align)
         scaled.recycle()
