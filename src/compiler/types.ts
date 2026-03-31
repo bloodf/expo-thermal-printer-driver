@@ -7,10 +7,12 @@ export interface CompileContext {
   codePageId?: number;
 }
 
-export function createContext(paperWidthMm: number = 58, font: 'A' | 'B' = 'A'): CompileContext {
-  const charsPerLine = paperWidthMm >= 80
-    ? (font === 'A' ? 48 : 64)
-    : (font === 'A' ? 32 : 42);
+export function createContext(
+  paperWidthMm: number = 58,
+  font: 'A' | 'B' = 'A'
+): CompileContext {
+  const charsPerLine =
+    paperWidthMm >= 80 ? (font === 'A' ? 48 : 64) : font === 'A' ? 32 : 42;
 
   return { paperWidthMm, charsPerLine, currentFont: font };
 }

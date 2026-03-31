@@ -1,9 +1,21 @@
 // src/builder/ESCPOSBuilder.ts
-import { CMD, LF, feedLines, qrCmd, setCharSize, selectCodePage } from '../compiler/escpos/commands';
+import {
+  CMD,
+  LF,
+  feedLines,
+  qrCmd,
+  setCharSize,
+  selectCodePage,
+} from '../compiler/escpos/commands';
 import { resolveCodePage } from '../compiler/escpos/encoding';
 import type { CodePage } from '../types';
 
-const QR_ERROR_MAP: Record<string, number> = { L: 0x30, M: 0x31, Q: 0x32, H: 0x33 };
+const QR_ERROR_MAP: Record<string, number> = {
+  L: 0x30,
+  M: 0x31,
+  Q: 0x32,
+  H: 0x33,
+};
 
 export class ESCPOSBuilder {
   private _bytes: number[] = [];
@@ -71,9 +83,13 @@ export class ESCPOSBuilder {
     return this;
   }
 
-  qr(data: string, options?: { size?: number; errorLevel?: 'L' | 'M' | 'Q' | 'H' }): this {
+  qr(
+    data: string,
+    options?: { size?: number; errorLevel?: 'L' | 'M' | 'Q' | 'H' }
+  ): this {
     const size = options?.size ?? 5;
-    const errLevel = QR_ERROR_MAP[options?.errorLevel ?? 'M'] ?? QR_ERROR_MAP['M']!;
+    const errLevel =
+      QR_ERROR_MAP[options?.errorLevel ?? 'M'] ?? QR_ERROR_MAP.M!;
     this._bytes.push(...qrCmd(data, size, errLevel), LF);
     return this;
   }

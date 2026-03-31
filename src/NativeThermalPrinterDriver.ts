@@ -34,6 +34,4 @@ export interface Spec extends TurboModule {
   removeListeners(count: number): void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>(
-  'ThermalPrinterDriver'
-);
+export default TurboModuleRegistry.getEnforcing<Spec>('ThermalPrinterDriver');

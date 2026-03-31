@@ -11,7 +11,9 @@ export const CODE_PAGE_MAP: Record<string, number> = {
   iso8859_15: 40,
 };
 
-export function resolveCodePage(codePage: string | number | undefined): number | undefined {
+export function resolveCodePage(
+  codePage: string | number | undefined
+): number | undefined {
   if (codePage === undefined) return undefined;
   if (typeof codePage === 'number') return codePage;
   return CODE_PAGE_MAP[codePage];

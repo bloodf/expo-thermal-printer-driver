@@ -21,9 +21,7 @@ function withAndroidBluetooth(config) {
     ];
 
     const existing = new Set(
-      manifest.manifest['uses-permission'].map(
-        (p) => p.$['android:name']
-      )
+      manifest.manifest['uses-permission'].map((p) => p.$['android:name'])
     );
 
     for (const permission of permissions) {

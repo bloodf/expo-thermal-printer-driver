@@ -1,12 +1,21 @@
 // src/document/nodes.ts
 import type { TextStyle } from '../types';
-import type { Node, ImageSource, BarcodeFormat, ColumnDef, TableDef } from './types';
+import type {
+  Node,
+  ImageSource,
+  BarcodeFormat,
+  ColumnDef,
+  TableDef,
+} from './types';
 
 export function text(content: string, style?: TextStyle): Node {
   return { type: 'text', content, style };
 }
 
-export function line(options?: { style?: 'solid' | 'dashed'; character?: string }): Node {
+export function line(options?: {
+  style?: 'solid' | 'dashed';
+  character?: string;
+}): Node {
   return { type: 'line', ...options };
 }
 
@@ -19,7 +28,12 @@ export function qr(
 
 export function barcode(
   content: string,
-  options: { format: BarcodeFormat; height?: number; width?: number; hri?: 'none' | 'above' | 'below' | 'both' }
+  options: {
+    format: BarcodeFormat;
+    height?: number;
+    width?: number;
+    hri?: 'none' | 'above' | 'below' | 'both';
+  }
 ): Node {
   return { type: 'barcode', content, ...options };
 }

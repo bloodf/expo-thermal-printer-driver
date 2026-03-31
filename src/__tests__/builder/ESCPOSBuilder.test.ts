@@ -31,7 +31,7 @@ describe('ESCPOSBuilder', () => {
 
   it('qr generates QR commands', () => {
     const bytes = new ESCPOSBuilder().qr('test', { size: 4 }).bytes();
-    expect(findSubarray(bytes, [GS, 0x28, 0x6B])).toBeGreaterThanOrEqual(0);
+    expect(findSubarray(bytes, [GS, 0x28, 0x6b])).toBeGreaterThanOrEqual(0);
   });
 
   it('cut generates cut command', () => {
@@ -50,7 +50,11 @@ describe('ESCPOSBuilder', () => {
   });
 
   it('underline toggles underline', () => {
-    const bytes = new ESCPOSBuilder().underline(true).text('U').underline(false).bytes();
+    const bytes = new ESCPOSBuilder()
+      .underline(true)
+      .text('U')
+      .underline(false)
+      .bytes();
     expect(findSubarray(bytes, CMD.UNDERLINE_1)).toBeGreaterThanOrEqual(0);
     expect(findSubarray(bytes, CMD.UNDERLINE_OFF)).toBeGreaterThanOrEqual(0);
   });
@@ -62,7 +66,11 @@ describe('ESCPOSBuilder', () => {
   });
 
   it('reverse toggles reverse video', () => {
-    const bytes = new ESCPOSBuilder().reverse(true).text('R').reverse(false).bytes();
+    const bytes = new ESCPOSBuilder()
+      .reverse(true)
+      .text('R')
+      .reverse(false)
+      .bytes();
     expect(findSubarray(bytes, CMD.REVERSE_ON)).toBeGreaterThanOrEqual(0);
     expect(findSubarray(bytes, CMD.REVERSE_OFF)).toBeGreaterThanOrEqual(0);
   });
@@ -85,7 +93,10 @@ function findSubarray(haystack: number[], needle: readonly number[]): number {
   for (let i = 0; i <= haystack.length - needle.length; i++) {
     let match = true;
     for (let j = 0; j < needle.length; j++) {
-      if (haystack[i + j] !== needle[j]) { match = false; break; }
+      if (haystack[i + j] !== needle[j]) {
+        match = false;
+        break;
+      }
     }
     if (match) return i;
   }

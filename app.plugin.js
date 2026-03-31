@@ -6,13 +6,17 @@ const { createRequire } = require('module');
 // @expo/config-plugins from the consuming app. Walk up to find node_modules.
 function findAppRequire() {
   // Try the standard require first
-  try { return require; } catch {}
+  try {
+    return require;
+  } catch {}
   // If symlinked, construct a require from the consuming app
   const path = require('path');
   let dir = __dirname;
   for (let i = 0; i < 10; i++) {
     try {
-      const r = createRequire(path.join(dir, 'node_modules', '.package-lock.json'));
+      const r = createRequire(
+        path.join(dir, 'node_modules', '.package-lock.json')
+      );
       r.resolve('@expo/config-plugins');
       return r;
     } catch {}
@@ -29,11 +33,12 @@ try {
 } catch {
   // Last resort: try to find it anywhere in the module search path
   configPlugins = require(require.resolve('@expo/config-plugins', {
-    paths: [process.cwd(), __dirname]
+    paths: [process.cwd(), __dirname],
   }));
 }
 
-const { createRunOncePlugin, withAndroidManifest, withInfoPlist } = configPlugins;
+const { createRunOncePlugin, withAndroidManifest, withInfoPlist } =
+  configPlugins;
 const pkg = require('./package.json');
 
 const BLUETOOTH_PERMISSIONS = [
@@ -65,14 +70,14 @@ function withAndroidBluetooth(config) {
 
 function withIosBluetooth(config, options) {
   return withInfoPlist(config, (iosConfig) => {
-    iosConfig.modResults['NSBluetoothAlwaysUsageDescription'] =
-      iosConfig.modResults['NSBluetoothAlwaysUsageDescription'] ??
-      (options?.bluetoothAlwaysUsageDescription ??
-        'This app uses Bluetooth to communicate with thermal printers.');
-    iosConfig.modResults['NSBluetoothPeripheralUsageDescription'] =
-      iosConfig.modResults['NSBluetoothPeripheralUsageDescription'] ??
-      (options?.bluetoothPeripheralUsageDescription ??
-        'This app uses Bluetooth to communicate with thermal printers.');
+    iosConfig.modResults.NSBluetoothAlwaysUsageDescription =
+      iosConfig.modResults.NSBluetoothAlwaysUsageDescription ??
+      options?.bluetoothAlwaysUsageDescription ??
+      'This app uses Bluetooth to communicate with thermal printers.';
+    iosConfig.modResults.NSBluetoothPeripheralUsageDescription =
+      iosConfig.modResults.NSBluetoothPeripheralUsageDescription ??
+      options?.bluetoothPeripheralUsageDescription ??
+      'This app uses Bluetooth to communicate with thermal printers.';
     return iosConfig;
   });
 }
