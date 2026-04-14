@@ -1,25 +1,112 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
+    paths:
+      - package.json
+      - yarn.lock
+      - src/**
+      - ios/**
+      - android/**
+      - cpp/**
+      - app.plugin.js
+      - react-native.config.js
+      - ThermalPrinterDriver.podspec
+      - .github/workflows/publish.yml
+  workflow_dispatch:
+
+concurrency:
+  group: publish-npm-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.version_check.outputs.should_publish }}
+      local_version: ${{ steps.version_check.outputs.local_version }}
+      remote_version: ${{ steps.version_check.outputs.remote_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Compare package version with npm
+        id: version_check
+        shell: bash
+        run: |
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          REMOTE_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "")
+
+          echo "local_version=$LOCAL_VERSION" >> "$GITHUB_OUTPUT"
+          echo "remote_version=${REMOTE_VERSION:-unpublished}" >> "$GITHUB_OUTPUT"
+
+          SHOULD_PUBLISH=$(node - "$LOCAL_VERSION" "$REMOTE_VERSION" <<'NODE'
+          const local = process.argv[2];
+          const remote = process.argv[3] || '';
+
+          const parse = (value) => {
+            const match = String(value).trim().match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);
+            return match ? match.slice(1, 4).map(Number) : null;
+          };
+
+          if (!remote) {
+            console.log('true');
+            process.exit(0);
+          }
+
+          const a = parse(local);
+          const b = parse(remote);
+
+          if (!a || !b) {
+            console.log(local !== remote ? 'true' : 'false');
+            process.exit(0);
+          }
+
+          for (let i = 0; i < 3; i += 1) {
+            if (a[i] > b[i]) {
+              console.log('true');
+              process.exit(0);
+            }
+            if (a[i] < b[i]) {
+              console.log('false');
+              process.exit(0);
+            }
+          }
+
+          console.log('false');
+          NODE
+          )
+
+          echo "should_publish=$SHOULD_PUBLISH" >> "$GITHUB_OUTPUT"
+
+          if [ "$SHOULD_PUBLISH" = "true" ]; then
+            echo "Publishing version $LOCAL_VERSION (npm currently: ${REMOTE_VERSION:-unpublished})."
+          else
+            echo "Skipping publish because version $LOCAL_VERSION is not newer than ${REMOTE_VERSION:-unpublished}."
+          fi
+
   publish:
+    needs: check-version
+    if: needs.check-version.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
-
-      - name: Install dependencies
-        run: yarn install --immutable
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Build
         run: yarn prepare
@@ -28,3 +115,13 @@ jobs:
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-skipped:
+    needs: check-version
+    if: needs.check-version.outputs.should_publish != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report skipped publish
+        run: |
+          echo "Package version ${{ needs.check-version.outputs.local_version }} is not newer than npm version ${{ needs.check-version.outputs.remote_version }}."
+          echo "Skipping npm publish."

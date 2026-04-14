@@ -9753,6 +9753,7 @@ __metadata:
     turbo: "npm:^2.5.6"
     typescript: "npm:^5.9.2"
   peerDependencies:
+    expo: ">=54.0.0"
     react: "*"
     react-native: ">=0.76.0"
   peerDependenciesMeta:
