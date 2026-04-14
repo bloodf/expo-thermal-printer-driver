@@ -1,5 +1,5 @@
 #pragma once
-#import <ThermalPrinterDriverSpec/ThermalPrinterDriverSpec.h>
+#import <RNThermalPrinterDriverSpec/RNThermalPrinterDriverSpec.h>
 #import <React/RCTEventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN

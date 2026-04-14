@@ -2,7 +2,7 @@
 
 // Swift implementation — generated umbrella header name matches the module's
 // product name with hyphens replaced by underscores.
-#import "react_native_thermal_printer_driver-Swift.h"
+#import "ThermalPrinterDriver-Swift.h"
 
 @implementation ThermalPrinterDriver {
     ThermalPrinterDriverImpl *_impl;
@@ -13,7 +13,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _impl = [[ThermalPrinterDriverImpl alloc] init];
-        __weak typeof(self) weakSelf = self;
+        __weak ThermalPrinterDriver *weakSelf = self;
         _impl.onEvent = ^(NSString *name, NSDictionary *body) {
             [weakSelf sendEventWithName:name body:body];
         };

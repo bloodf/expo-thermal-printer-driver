@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "React Native thermal printer driver for ESC/POS printers over Bluetooth Classic, BLE, and TCP. TurboModule with full New Architecture support.",
   "main": "./lib/module/index.js",
+  "module": "./lib/module/index.js",
   "source": "./src/index.ts",
   "react-native": "./src/index.ts",
   "types": "./lib/typescript/src/index.d.ts",
@@ -13,7 +14,8 @@
       "default": "./lib/module/index.js"
     },
     "./package.json": "./package.json",
-    "./app.plugin.js": "./app.plugin.js"
+    "./app.plugin.js": "./app.plugin.js",
+    "./react-native.config.js": "./react-native.config.js"
   },
   "files": [
     "src",
@@ -90,6 +92,7 @@
     "typescript": "^5.9.2"
   },
   "peerDependencies": {
+    "expo": ">=54.0.0",
     "react": "*",
     "react-native": ">=0.76.0"
   },
@@ -124,6 +127,11 @@
     "name": "RNThermalPrinterDriverSpec",
     "type": "modules",
     "jsSrcsDir": "src",
+    "ios": {
+      "modulesProvider": {
+        "ThermalPrinterDriver": "ThermalPrinterDriver"
+      }
+    },
     "android": {
       "javaPackageName": "com.thermalprinterdriver"
     }
