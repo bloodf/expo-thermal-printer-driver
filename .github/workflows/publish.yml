@@ -1,28 +1,26 @@
 name: Publish to npm
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - package.json
-      - yarn.lock
-      - src/**
-      - ios/**
-      - android/**
-      - cpp/**
-      - app.plugin.js
-      - react-native.config.js
-      - ThermalPrinterDriver.podspec
-      - .github/workflows/publish.yml
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
-  group: publish-npm-${{ github.ref }}
+  group: publish-npm-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: false
 
 jobs:
   check-version:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'workflow_run' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main'
+      )
     runs-on: ubuntu-latest
     outputs:
       should_publish: ${{ steps.version_check.outputs.should_publish }}
@@ -31,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -104,9 +104,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Setup
-        uses: ./.github/actions/setup
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: yarn install --immutable
 
       - name: Build
         run: yarn prepare
