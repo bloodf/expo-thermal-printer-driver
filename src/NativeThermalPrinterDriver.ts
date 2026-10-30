@@ -5,6 +5,8 @@ import { TurboModuleRegistry } from 'react-native';
 export interface Spec extends TurboModule {
   // Discovery
   scanDevices(): Promise<Object>;
+  /** Attached USB printers (Android USB host mode). Always empty on iOS. */
+  scanUsbDevices(): Promise<Object>;
   stopScan(): Promise<boolean>;
 
   // Connection

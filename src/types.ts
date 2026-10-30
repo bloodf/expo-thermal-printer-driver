@@ -3,7 +3,7 @@
 export interface Device {
   name: string;
   address: string;
-  deviceType: 'bt' | 'ble' | 'dual' | 'unknown';
+  deviceType: 'bt' | 'ble' | 'dual' | 'usb' | 'unknown';
   rssi?: number;
 }
 

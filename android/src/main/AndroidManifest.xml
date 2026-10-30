@@ -11,6 +11,9 @@
     <!-- Required for Bluetooth Classic discovery on Android 6–11 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- USB transport (host mode / OTG); optional so devices without it can still install -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+
     <!-- TCP/LAN transport -->
     <uses-permission android:name="android.permission.INTERNET" />
 

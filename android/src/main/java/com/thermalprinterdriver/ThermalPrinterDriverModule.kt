@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.thermalprinterdriver.connection.ConnectionPool
 import com.thermalprinterdriver.discovery.DeviceScanner
+import com.thermalprinterdriver.discovery.UsbScanner
 import com.thermalprinterdriver.image.ImageProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class ThermalPrinterDriverModule(reactContext: ReactApplicationContext) :
 
     private val moduleScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val deviceScanner = DeviceScanner(reactContext)
+    private val usbScanner = UsbScanner(reactContext)
     private val connectionPool = ConnectionPool(reactContext)
 
     // ---- NativeModule identity ----
@@ -47,6 +49,16 @@ class ThermalPrinterDriverModule(reactContext: ReactApplicationContext) :
         Log.d(TAG, "[Native:Android] scanDevices START")
         moduleScope.launch {
             deviceScanner.scanDevices(promise)
+        }
+    }
+
+    override fun scanUsbDevices(promise: Promise) {
+        Log.d(TAG, "[Native:Android] scanUsbDevices")
+        try {
+            promise.resolve(usbScanner.scan())
+        } catch (e: Exception) {
+            Log.e(TAG, "[Native:Android] scanUsbDevices ERROR: ${e.message}", e)
+            promise.reject("USB_SCAN_ERROR", e.message, e)
         }
     }
 
