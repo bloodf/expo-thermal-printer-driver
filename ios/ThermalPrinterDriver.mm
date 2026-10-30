@@ -53,6 +53,11 @@
     [_impl scanDevicesWithResolve:resolve reject:reject];
 }
 
+- (void)scanUsbDevices:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    // iOS has no USB host access for third-party apps; report no USB printers.
+    resolve(@[]);
+}
+
 - (void)stopScan:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [_impl stopScanWithResolve:resolve reject:reject];
 }

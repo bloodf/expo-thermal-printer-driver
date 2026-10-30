@@ -13,6 +13,7 @@ Supports ESC/POS text formatting, image printing with Floyd-Steinberg dithering,
 | Bluetooth Classic                             |   Yes   |  -  |
 | BLE (Bluetooth Low Energy)                    |   Yes   | Yes |
 | TCP/LAN (Wi-Fi printers)                      |   Yes   | Yes |
+| USB (OTG / USB host)                          |   Yes   |  -  |
 | Text with styles (bold, underline, alignment) |   Yes   | Yes |
 | Image printing (URL, file, base64)            |   Yes   | Yes |
 | QR codes                                      |   Yes   | Yes |
@@ -131,6 +132,19 @@ interface Device {
 
 Stops an active device scan.
 
+#### `scanUsb(): Promise<Device[]>`
+
+Lists printers attached over USB (Android USB host mode / OTG). Returns devices with
+`deviceType: 'usb'` and `usb:<vendorId>:<productId>` addresses (hex). No permission is
+needed to list them; Android shows its "Allow access to USB device" dialog the first
+time you connect. Matches USB printer-class interfaces and vendor-specific interfaces
+with a bulk OUT endpoint (e.g. Epson TM printers in vendor mode). Always empty on iOS.
+
+```typescript
+const usbPrinters = await ThermalPrinter.scanUsb();
+await ThermalPrinter.connect(usbPrinters[0].address); // e.g. 'usb:04b8:0202'
+```
+
 #### `onDeviceFound(callback): Subscription`
 
 Subscribe to real-time device discovery events during a scan.
@@ -170,6 +184,7 @@ Connects to a printer. The address format determines the transport:
 | `bt:XX:XX:XX:XX:XX:XX`                | Bluetooth Classic |
 | `ble:UUID` or `ble:XX:XX:XX:XX:XX:XX` | BLE               |
 | `tcp:192.168.1.100:9100`              | TCP/LAN           |
+| `usb:04b8:0202` (vendor:product, hex) | USB (Android)     |
 
 ```typescript
 await ThermalPrinter.connect('bt:86:67:7A:CA:30:D8', { timeout: 10000 });

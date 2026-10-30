@@ -10,6 +10,7 @@ import java.io.IOException
  *  - bt:<MAC>           — Bluetooth Classic (RFCOMM/SPP)
  *  - ble:<MAC>          — Bluetooth Low Energy (GATT)
  *  - lan:<HOST>:<PORT>  — TCP/LAN (port defaults to 9100)
+ *  - usb:<VID>:<PID>    — USB host mode, vendor/product IDs in hex
  */
 object TransportFactory {
 
@@ -31,6 +32,11 @@ object TransportFactory {
                 val host = parts[0]
                 val port = parts.getOrNull(1)?.toIntOrNull() ?: 9100
                 TcpTransport(host, port)
+            }
+            "usb" -> {
+                val ctx = context ?: throw IOException("Context required for USB transport")
+                val (vendorId, productId) = UsbTransport.parseTarget(target)
+                UsbTransport(ctx, vendorId, productId)
             }
             else -> throw IOException("Unknown transport scheme '$scheme' in address: $address")
         }

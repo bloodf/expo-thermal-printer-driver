@@ -11,6 +11,7 @@ jest.mock('../NativeThermalPrinterDriver', () => ({
   __esModule: true,
   default: {
     scanDevices: jest.fn(),
+    scanUsbDevices: jest.fn(),
     stopScan: jest.fn(),
     connect: jest.fn(),
     disconnect: jest.fn(),
@@ -151,5 +152,23 @@ describe('compileDocument integration via ThermalPrinter', () => {
     const bytes = compileDocument([line()], { paperWidthMm: 80 });
     const dashCount = bytes.filter((b) => b === 0x2d).length;
     expect(dashCount).toBe(48);
+  });
+});
+
+describe('ThermalPrinter.scanUsb', () => {
+  it('returns the USB devices reported by the native module', async () => {
+    const native = require('../NativeThermalPrinterDriver').default;
+    const devices = [
+      {
+        name: 'EPSON TM-H6000V',
+        address: 'usb:04b8:0202',
+        deviceType: 'usb',
+        rssi: 0,
+      },
+    ];
+    native.scanUsbDevices.mockResolvedValueOnce(devices);
+
+    await expect(ThermalPrinter.scanUsb()).resolves.toEqual(devices);
+    expect(native.scanUsbDevices).toHaveBeenCalledTimes(1);
   });
 });

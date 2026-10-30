@@ -42,6 +42,15 @@ const ThermalPrinter = {
     return parseResult<ScanResult>(result);
   },
 
+  /**
+   * List attached USB printers (Android USB host mode). Addresses use the
+   * `usb:<vid>:<pid>` scheme; access is requested on first connect. Empty on iOS.
+   */
+  async scanUsb(): Promise<Device[]> {
+    const result = await NativeThermalPrinterDriver.scanUsbDevices();
+    return parseResult<Device[]>(result);
+  },
+
   async stopScan(): Promise<void> {
     await NativeThermalPrinterDriver.stopScan();
   },
